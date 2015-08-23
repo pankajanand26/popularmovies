@@ -23,7 +23,6 @@ public class PopularMoviesFragment extends Fragment {
 
         final View rootview=inflater.inflate(R.layout.fragment_movies, container, false);;
 
-
         GridView gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
         gridview.setAdapter(new ImageAdapter(getActivity()));
 
@@ -35,7 +34,7 @@ public class PopularMoviesFragment extends Fragment {
             }
         });
 
+//        return rootview;
         return rootview;
-
-        }
+    }
 }
