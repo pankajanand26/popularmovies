@@ -1,24 +1,31 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
+
+import com.squareup.picasso.Picasso;
+
+import java.util.List;
 
 /**
  * Created by pankajanand on 22/8/15.
  */
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
+    private List<TheMovie> mThumbIdi;
 
-    public ImageAdapter(Context c) {
+    public ImageAdapter(Context c,List<TheMovie> mThumbId) {
         mContext = c;
+        mThumbIdi = mThumbId;
     }
 
     public int getCount() {
-        return mThumbIds.length;
+        return mThumbIdi.size();
     }
 
     public Object getItem(int position) {
@@ -32,32 +39,29 @@ public class ImageAdapter extends BaseAdapter {
     // create a new ImageView for each item referenced by the Adapter
     public View getView(int position, View convertView, ViewGroup parent) {
         ImageView imageView;
+        TextView txtView;
         if (convertView == null) {
             // if it's not recycled, initialize some attributes
-            imageView = new ImageView(mContext);
-            imageView.setLayoutParams(mContext.getResources().getLayout(R.layout.fragment_movies).getAttributeResourceValue() GridView.LayoutParams(135, 135));
+            convertView = LayoutInflater.from(mContext).inflate(R.layout.list_item_movies, parent, false);
+
+
+            txtView=(TextView) convertView.findViewById(R.id.list_item_text);
+            imageView=(ImageView) convertView.findViewById(R.id.list_item_image);
+           // imageView.setLayoutParams(new GridView.LayoutParams(50, 50));
             imageView.setScaleType(ImageView.ScaleType.CENTER_CROP);
             imageView.setPadding(8, 8, 8, 8);
+
         } else {
-            imageView = (ImageView) convertView;
+            convertView.findViewById(R.id.list_item_image);
+            imageView = (ImageView) convertView.findViewById(R.id.list_item_image);
+            txtView=(TextView) convertView.findViewById(R.id.list_item_text);
         }
 
-        imageView.setImageResource(mThumbIds[position]);
-        return imageView;
+        Picasso.with(mContext).load(mThumbIdi.get(position).getPosterPath()).into(imageView);
+        //imageView.setImageResource(mThumbIdi.get(position).getPosterPath());
+        txtView.setText("Hello World!");
+
+        return convertView;
     }
 
-    // references to our images
-    private Integer[] mThumbIds = {
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7,
-            R.drawable.sample_0, R.drawable.sample_1,
-            R.drawable.sample_2, R.drawable.sample_3,
-            R.drawable.sample_4, R.drawable.sample_5,
-            R.drawable.sample_6, R.drawable.sample_7
-    };
 }
