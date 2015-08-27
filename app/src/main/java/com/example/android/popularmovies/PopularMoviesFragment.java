@@ -22,7 +22,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -101,7 +100,7 @@ public class PopularMoviesFragment extends Fragment {
             Uri builtUri = Uri.parse(BASE_PATH)
                     .buildUpon()
                     .appendQueryParameter(SORT_PARM, "popularity.desc")
-                    .appendQueryParameter(API_KEY, "206bcb4d43725484275829800db443c9")
+                    .appendQueryParameter(API_KEY, "XXXXXX")
                     .build();
 
             Log.v(LOG_TAG,builtUri.toString());
