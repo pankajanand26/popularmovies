@@ -30,7 +30,8 @@ import java.util.Arrays;
 public class PopularMoviesFragment extends Fragment {
     private ImageAdapter mAdapter;
     private JSONArray movieList;
-    public TheMovie[] movies=new TheMovie[21];
+    public TheMovie[] movies=new TheMovie[20];
+    public GridView gridview;
 
     public PopularMoviesFragment() {
     }
@@ -60,25 +61,27 @@ public class PopularMoviesFragment extends Fragment {
             Log.d("TheMovie","AAl izz Not Well.");
         }*/
 
-        mAdapter = new ImageAdapter(getActivity(),Arrays.asList(movies));
+        //mAdapter = new ImageAdapter(getActivity(),Arrays.asList(movies));
 
 
-        GridView gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
-        gridview.setAdapter(mAdapter);
+        gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
+       // gridview.setAdapter(mAdapter);
 
-        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+        /*gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
             public void onItemClick(AdapterView<?> parent, View v,
                                     int position, long id) {
                 Toast.makeText(getActivity(), "" + position,
                         Toast.LENGTH_SHORT).show();
             }
-        });
+        });*/
 
         return rootview;
 
     }
 
+    public void onViewCreated(){
 
+    }
 
     public class FetchMovies extends AsyncTask<Void,Void,JSONArray> {
 
@@ -100,7 +103,7 @@ public class PopularMoviesFragment extends Fragment {
             Uri builtUri = Uri.parse(BASE_PATH)
                     .buildUpon()
                     .appendQueryParameter(SORT_PARM, "popularity.desc")
-                    .appendQueryParameter(API_KEY, "XXXXXX")
+                    .appendQueryParameter(API_KEY, "XXXXXXX")
                     .build();
 
             Log.v(LOG_TAG,builtUri.toString());
@@ -181,6 +184,18 @@ public class PopularMoviesFragment extends Fragment {
             if(movies!=null){
                 Log.d("TheMovie","AAl izzz Well.");
            //     mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
+                mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
+
+
+                gridview.setAdapter(mAdapter);
+                gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+                    public void onItemClick(AdapterView<?> parent, View v,
+                                            int position, long id) {
+                        Toast.makeText(getActivity(), "" + position,
+                                Toast.LENGTH_SHORT).show();
+                    }
+                });
+
             }
             else{
                 Log.d("TheMovie","AAl izz Not Well.");
@@ -198,9 +213,9 @@ public class PopularMoviesFragment extends Fragment {
                 } catch (JSONException e) {
                     Log.e("TheMovie", "Unable to create movie object."+ e.toString());
                 }
-           }
+            }
         }
 
-   }
+    }
 
 }

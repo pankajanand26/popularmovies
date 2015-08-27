@@ -35,6 +35,6 @@ public class TheMovie {
             Log.e("TheMovie Title","Unable to get the poster path.");
         }
 
-        return "http://image.tmdb.org/t/p/"+"w92/"+posterPath;
+        return "http://image.tmdb.org/t/p/"+"w185/"+posterPath;
     }
 }

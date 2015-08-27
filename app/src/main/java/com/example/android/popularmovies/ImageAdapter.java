@@ -62,7 +62,7 @@ public class ImageAdapter extends BaseAdapter {
         Log.d("Poster Path", mThumbIdi.get(position).getPosterPath());
         Picasso.with(mContext).load(mThumbIdi.get(position).getPosterPath()).into(imageView);
         //imageView.setImageResource(mThumbIdi.get(position).getPosterPath());
-        txtView.setText("Hello World!");
+        txtView.setText(mThumbIdi.get(position).getMovieTitle());
 
         return convertView;
     }
