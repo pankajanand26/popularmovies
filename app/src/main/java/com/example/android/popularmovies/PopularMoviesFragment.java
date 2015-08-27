@@ -22,6 +22,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.util.ArrayList;
 import java.util.Arrays;
 
 /**
@@ -30,32 +31,37 @@ import java.util.Arrays;
 public class PopularMoviesFragment extends Fragment {
     private ImageAdapter mAdapter;
     private JSONArray movieList;
-    public TheMovie[] movies=new TheMovie[80];
+    public TheMovie[] movies=new TheMovie[21];
 
     public PopularMoviesFragment() {
     }
 
+    public void fetchMovies(){
+        FetchMovies fetchtask = new FetchMovies();
+        fetchtask.execute();
+    }
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         final View rootview=inflater.inflate(R.layout.fragment_movies, container, false);
-        if(movieList!=null) {
-            Log.d("Start", ((String) ("Start and movieList length is " + movieList.length())));
-        }
-        else{
-            Log.d("Start", "Start and movieList length is 0. " );
-        }
-        FetchMovies fetchtask = new FetchMovies();
-        fetchtask.execute();
+     //   if(movieList!=null) {
+      //      Log.d("Start", ((String) ("Start and movieList length is " + movieList.length())));
+       // }
+        //else{
+          //  Log.d("Start", "Start and movieList length is 0. " );
+       // }
 
-        if(movies!=null){
+        fetchMovies();
+
+      /*  if(movies!=null){
             Log.d("TheMovie","AAl izzz Well.");
         }
         else{
             Log.d("TheMovie","AAl izz Not Well.");
-        }
-  //      mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
+        }*/
+
+        mAdapter = new ImageAdapter(getActivity(),Arrays.asList(movies));
 
 
         GridView gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
@@ -95,7 +101,7 @@ public class PopularMoviesFragment extends Fragment {
             Uri builtUri = Uri.parse(BASE_PATH)
                     .buildUpon()
                     .appendQueryParameter(SORT_PARM, "popularity.desc")
-                    .appendQueryParameter(API_KEY, "XXXXXXXXXXXXXXXXXXXXXXXXXXX")
+                    .appendQueryParameter(API_KEY, "206bcb4d43725484275829800db443c9")
                     .build();
 
             Log.v(LOG_TAG,builtUri.toString());
@@ -175,7 +181,7 @@ public class PopularMoviesFragment extends Fragment {
             getMovies(movieList);
             if(movies!=null){
                 Log.d("TheMovie","AAl izzz Well.");
-                mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
+           //     mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
             }
             else{
                 Log.d("TheMovie","AAl izz Not Well.");
@@ -187,7 +193,7 @@ public class PopularMoviesFragment extends Fragment {
             if (moviesJSON != null) {
 
                 try {
-                    for (int i = 0;1<moviesJSON.length(); i++) {
+                    for (int i = 0;i<moviesJSON.length(); i++) {
                             movies[i] = new TheMovie(moviesJSON.getJSONObject(i));
                     }
                 } catch (JSONException e) {

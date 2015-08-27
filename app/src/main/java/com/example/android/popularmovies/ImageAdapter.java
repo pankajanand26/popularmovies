@@ -23,6 +23,7 @@ public class ImageAdapter extends BaseAdapter {
     public ImageAdapter(Context c,List<TheMovie> mThumbId) {
         mContext = c;
         mThumbIdi = mThumbId;
+        Log.d("ImageAdapter",((String)("ENter the Adapter" + mThumbIdi.size())));
     }
 
     public int getCount() {
@@ -58,7 +59,7 @@ public class ImageAdapter extends BaseAdapter {
             txtView=(TextView) convertView.findViewById(R.id.list_item_text);
         }
 
-        Log.v("Poster Path",mThumbIdi.get(position).getPosterPath());
+        Log.d("Poster Path", mThumbIdi.get(position).getPosterPath());
         Picasso.with(mContext).load(mThumbIdi.get(position).getPosterPath()).into(imageView);
         //imageView.setImageResource(mThumbIdi.get(position).getPosterPath());
         txtView.setText("Hello World!");
