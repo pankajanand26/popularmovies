@@ -1,6 +1,7 @@
 package com.example.android.popularmovies;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -57,6 +58,7 @@ public class ImageAdapter extends BaseAdapter {
             txtView=(TextView) convertView.findViewById(R.id.list_item_text);
         }
 
+        Log.v("Poster Path",mThumbIdi.get(position).getPosterPath());
         Picasso.with(mContext).load(mThumbIdi.get(position).getPosterPath()).into(imageView);
         //imageView.setImageResource(mThumbIdi.get(position).getPosterPath());
         txtView.setText("Hello World!");

@@ -30,7 +30,7 @@ import java.util.Arrays;
 public class PopularMoviesFragment extends Fragment {
     private ImageAdapter mAdapter;
     private JSONArray movieList;
-    public TheMovie[] movies;
+    public TheMovie[] movies=new TheMovie[80];
 
     public PopularMoviesFragment() {
     }
@@ -39,13 +39,23 @@ public class PopularMoviesFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        final View rootview=inflater.inflate(R.layout.fragment_movies, container, false);;
-
+        final View rootview=inflater.inflate(R.layout.fragment_movies, container, false);
+        if(movieList!=null) {
+            Log.d("Start", ((String) ("Start and movieList length is " + movieList.length())));
+        }
+        else{
+            Log.d("Start", "Start and movieList length is 0. " );
+        }
         FetchMovies fetchtask = new FetchMovies();
         fetchtask.execute();
 
-        movies=getMovies(movieList);
-        mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
+        if(movies!=null){
+            Log.d("TheMovie","AAl izzz Well.");
+        }
+        else{
+            Log.d("TheMovie","AAl izz Not Well.");
+        }
+  //      mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
 
 
         GridView gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
@@ -63,25 +73,14 @@ public class PopularMoviesFragment extends Fragment {
 
     }
 
-    public TheMovie[] getMovies(JSONArray moviesJSON) {
-        TheMovie[] list=new TheMovie[20];
-        try{
-            for( int i=0;i<moviesJSON.length();i++) {
-            list[i] = new TheMovie(moviesJSON.getJSONObject(i));
-            }
-        }catch (JSONException e){
-            Log.e("TheMovie","Unable tovreate movie object.");
-        }
 
-        return list;
-    }
 
-    public class FetchMovies extends AsyncTask<String,Void,JSONArray> {
+    public class FetchMovies extends AsyncTask<Void,Void,JSONArray> {
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
 
         @Override
-        protected JSONArray doInBackground(String... params) {
+        protected JSONArray doInBackground(Void... params) {
 
             // If there's no zip code, there's nothing to look up.  Verify size of params.
             //if (params.length == 0) {
@@ -98,6 +97,8 @@ public class PopularMoviesFragment extends Fragment {
                     .appendQueryParameter(SORT_PARM, "popularity.desc")
                     .appendQueryParameter(API_KEY, "206bcb4d43725484275829800db443c9")
                     .build();
+
+            Log.v(LOG_TAG,builtUri.toString());
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -136,12 +137,16 @@ public class PopularMoviesFragment extends Fragment {
                 }
 
                 try {
-                    json = (new JSONObject(buffer.toString())).getJSONArray("results");
+                    Log.d("JSON Movies",buffer.toString());
+                    JSONObject j=new JSONObject(buffer.toString());
+//                    json = (new JSONObject(buffer.toString())).getJSONArray("results");
+                    json= j.getJSONArray("results");
+
                 } catch (JSONException e) {
                     Log.e("JSON Exception", e.toString());
                     return null;
                 }
-                Log.v("Movies JSON", "Movies JSON Array Length : " + json.length());
+                Log.v("Movies JSON", ((String) ("Movies JSON Array Length " + json.length())));
 
             } catch (IOException e) {
                 Log.e("Movies JSON", "Error", e);
@@ -166,6 +171,29 @@ public class PopularMoviesFragment extends Fragment {
         @Override
         protected void onPostExecute(JSONArray strings) {
             movieList=strings;
+            Log.d("On AsyncTask",((String)("Length of movieList is " + movieList.length())));
+            getMovies(movieList);
+            if(movies!=null){
+                Log.d("TheMovie","AAl izzz Well.");
+                mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
+            }
+            else{
+                Log.d("TheMovie","AAl izz Not Well.");
+            }
+
+        }
+
+        public void getMovies(JSONArray moviesJSON) {
+            if (moviesJSON != null) {
+
+                try {
+                    for (int i = 0;1<moviesJSON.length(); i++) {
+                            movies[i] = new TheMovie(moviesJSON.getJSONObject(i));
+                    }
+                } catch (JSONException e) {
+                    Log.e("TheMovie", "Unable to create movie object."+ e.toString());
+                }
+           }
         }
 
    }
