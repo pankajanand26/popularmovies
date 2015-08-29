@@ -1,4 +1,3 @@
-
     <GridView xmlns:android="http://schemas.android.com/apk/res/android"
         android:id="@+id/moviesgrid"
         android:numColumns="2"
@@ -9,7 +8,6 @@
         android:horizontalSpacing="2dp"
         android:scrollingCache="true"
         android:smoothScrollbar="true"
-        android:clipChildren="true"
         android:alwaysDrawnWithCache="true"
         android:columnWidth="100dp"
         android:stretchMode="columnWidth"

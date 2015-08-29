@@ -1,16 +1,19 @@
 package com.example.android.popularmovies;
 
+import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
-import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -36,64 +39,70 @@ public class PopularMoviesFragment extends Fragment {
     public PopularMoviesFragment() {
     }
 
-    public void fetchMovies(){
-        FetchMovies fetchtask = new FetchMovies();
-        fetchtask.execute();
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+        super.onCreate(savedInstanceState);
+        //Add this line in order for this fragment to handle menu events.
+        setHasOptionsMenu(true);
     }
+
+
+    @Override
+    public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+        inflater.inflate(R.menu.fragment_menu, menu);
+    }
+
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.popularity) {
+            fetchMovies(getString(R.string.popularity_based) + ".desc");
+            return true;
+        }
+
+        if(id==R.id.rating){
+            fetchMovies(getString(R.string.rating_based) + ".desc");
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
+    }
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         final View rootview=inflater.inflate(R.layout.fragment_movies, container, false);
-     //   if(movieList!=null) {
-      //      Log.d("Start", ((String) ("Start and movieList length is " + movieList.length())));
-       // }
-        //else{
-          //  Log.d("Start", "Start and movieList length is 0. " );
-       // }
 
-        fetchMovies();
-
-      /*  if(movies!=null){
-            Log.d("TheMovie","AAl izzz Well.");
-        }
-        else{
-            Log.d("TheMovie","AAl izz Not Well.");
-        }*/
-
+        //fetch popular movies and populate in the grid
+        fetchMovies("popularity.desc");
         //mAdapter = new ImageAdapter(getActivity(),Arrays.asList(movies));
-
-
         gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
-       // gridview.setAdapter(mAdapter);
-
-        /*gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-            public void onItemClick(AdapterView<?> parent, View v,
-                                    int position, long id) {
-                Toast.makeText(getActivity(), "" + position,
-                        Toast.LENGTH_SHORT).show();
-            }
-        });*/
 
         return rootview;
 
     }
 
-    public void onViewCreated(){
-
+    public void fetchMovies(String sort){
+        FetchMovies fetchtask = new FetchMovies();
+        fetchtask.execute(sort);
     }
 
-    public class FetchMovies extends AsyncTask<Void,Void,JSONArray> {
+
+
+    public class FetchMovies extends AsyncTask<String,Void,JSONArray> {
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
 
         @Override
-        protected JSONArray doInBackground(Void... params) {
+        protected JSONArray doInBackground(String... params) {
 
             // If there's no zip code, there's nothing to look up.  Verify size of params.
-            //if (params.length == 0) {
-              //  return null;
-           // }
+            if (params.length == 0) {
+                return null;
+            }
 
             JSONArray json;
             final String BASE_PATH = "http://api.themoviedb.org/3/discover/movie?";
@@ -102,8 +111,8 @@ public class PopularMoviesFragment extends Fragment {
 
             Uri builtUri = Uri.parse(BASE_PATH)
                     .buildUpon()
-                    .appendQueryParameter(SORT_PARM, "popularity.desc")
-                    .appendQueryParameter(API_KEY, "XXXXXXX")
+                    .appendQueryParameter(SORT_PARM, params[0])
+                    .appendQueryParameter(API_KEY, "XXXXXX")
                     .build();
 
             Log.v(LOG_TAG,builtUri.toString());
@@ -178,21 +187,31 @@ public class PopularMoviesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(JSONArray strings) {
+
             movieList=strings;
             Log.d("On AsyncTask",((String)("Length of movieList is " + movieList.length())));
+
+            //converting movie objects.
             getMovies(movieList);
+
+            //if there are no movies then write error message.
             if(movies!=null){
-                Log.d("TheMovie","AAl izzz Well.");
-           //     mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
                 mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
 
-
+                //connecting the image adapter with the grid view.
                 gridview.setAdapter(mAdapter);
+
+                //defining the click listener for items in grid.
                 gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View v,
                                             int position, long id) {
-                        Toast.makeText(getActivity(), "" + position,
-                                Toast.LENGTH_SHORT).show();
+                        //show position of item when clicked.
+                     //   Toast.makeText(getActivity(), "" + position,
+                       //         Toast.LENGTH_SHORT).show();
+                        TheMovie movie_selected= (TheMovie) mAdapter.getItem(position);
+                        String movie_json= movie_selected.getMovieTitle().toString();
+                        Intent intent1 = new Intent(getActivity(), MovieDetail.class).putExtra(Intent.EXTRA_TEXT,movie_json);
+                        startActivity(intent1);
                     }
                 });
 
@@ -203,6 +222,7 @@ public class PopularMoviesFragment extends Fragment {
 
         }
 
+        //Converting JSON Strings to Movie objects.
         public void getMovies(JSONArray moviesJSON) {
             if (moviesJSON != null) {
 
