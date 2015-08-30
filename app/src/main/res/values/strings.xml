@@ -8,4 +8,5 @@
     <string name="popularity_based" translatable="false">popularity</string>
     <string name="rating_based" translatable="false">vote_count</string>
     <string name="title_activity_movie_detail">Movie Detail</string>
+    <string name="overview">Plot: </string>
 </resources>
