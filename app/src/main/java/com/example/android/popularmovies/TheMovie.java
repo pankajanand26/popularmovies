@@ -10,8 +10,9 @@ import org.json.JSONObject;
  */
 public class TheMovie {
     private int movieID,voteCount,voteAverage;
-    private String movieTitle,moviePlot,posterPath;
+    private String movieTitle,moviePlot,posterPath,movieReleaseDate;
     private JSONObject moviesJSON;
+    String LOG_TAG= TheMovie.class.getSimpleName();
 
     public TheMovie(JSONObject movies){
         moviesJSON=movies;
@@ -22,19 +23,53 @@ public class TheMovie {
         try {
             movieTitle = moviesJSON.getString("original_title");
         }catch (JSONException e){
-            Log.e("TheMovie Title","Unable to get the title.");
+            Log.e(LOG_TAG,"Unable to get the title.");
         }
 
         return movieTitle;
     }
 
-    String getPosterPath(){
+    public String getPosterPath( String size){
         try {
             posterPath = moviesJSON.getString("poster_path");
         }catch (JSONException e){
-            Log.e("TheMovie Title","Unable to get the poster path.");
+            Log.e(LOG_TAG,"Unable to get the poster path.");
         }
 
-        return "http://image.tmdb.org/t/p/"+"w185/"+posterPath;
+        return "http://image.tmdb.org/t/p/"+size+"/"+posterPath;
     }
+
+    public String getJSON(){
+        return moviesJSON.toString();
+    }
+
+    public String getOverview(){
+
+        try {
+            moviePlot = moviesJSON.getString("overview");
+        }catch (JSONException e){
+            Log.e(LOG_TAG,"Unable to get the overview.");
+        }
+        return moviePlot;
+    }
+    public String getRating(){
+
+        try {
+            moviePlot = moviesJSON.getString("vote_average");
+        }catch (JSONException e){
+            Log.e(LOG_TAG,"Unable to get the vote_average.");
+        }
+        return moviePlot;
+    }
+
+    public String getRleaseDate(){
+
+        try {
+            movieReleaseDate = moviesJSON.getString("release_date");
+        }catch (JSONException e){
+            Log.e(LOG_TAG,"Unable to get the release_date.");
+        }
+        return movieReleaseDate;
+    }
+
 }

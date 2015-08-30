@@ -9,8 +9,10 @@ public class PopularMovies extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
+
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
+
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()
                     .add(R.id.fragment, new PopularMoviesFragment())
@@ -18,6 +20,11 @@ public class PopularMovies extends AppCompatActivity {
         }
     }
 
+    @Override
+    public void onResume(){
+        super.onResume();
+        
+    }
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {

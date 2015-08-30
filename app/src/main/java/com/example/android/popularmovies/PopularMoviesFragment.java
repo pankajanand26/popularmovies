@@ -42,6 +42,9 @@ public class PopularMoviesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+        if (savedInstanceState == null) {
+            fetchMovies("popularity.desc");
+        }
         //Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
     }
@@ -112,7 +115,7 @@ public class PopularMoviesFragment extends Fragment {
             Uri builtUri = Uri.parse(BASE_PATH)
                     .buildUpon()
                     .appendQueryParameter(SORT_PARM, params[0])
-                    .appendQueryParameter(API_KEY, "XXXXXX")
+                    .appendQueryParameter(API_KEY, "206bcb4d43725484275829800db443c9")
                     .build();
 
             Log.v(LOG_TAG,builtUri.toString());
@@ -205,13 +208,14 @@ public class PopularMoviesFragment extends Fragment {
                 gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
                     public void onItemClick(AdapterView<?> parent, View v,
                                             int position, long id) {
-                        //show position of item when clicked.
-                     //   Toast.makeText(getActivity(), "" + position,
-                       //         Toast.LENGTH_SHORT).show();
-                        TheMovie movie_selected= (TheMovie) mAdapter.getItem(position);
-                        String movie_json= movie_selected.getMovieTitle().toString();
-                        Intent intent1 = new Intent(getActivity(), MovieDetail.class).putExtra(Intent.EXTRA_TEXT,movie_json);
+                        TheMovie move=(TheMovie) mAdapter.getItem(position);
+                        String movie_selected= move.getJSON();
+                        //String movie_json= movie_selected.getMovieTitle();
+                        Intent intent1 = new Intent(getActivity(), MovieDetail.class).putExtra(Intent.EXTRA_TEXT,movie_selected);
                         startActivity(intent1);
+                     //   Toast.makeText(getActivity(), movie_selected + position,
+                       //                  Toast.LENGTH_SHORT).show();
+
                     }
                 });
 

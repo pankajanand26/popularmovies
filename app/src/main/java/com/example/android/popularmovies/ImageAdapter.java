@@ -19,11 +19,11 @@ import java.util.List;
 public class ImageAdapter extends BaseAdapter {
     private Context mContext;
     private List<TheMovie> mThumbIdi;
-
+    String LOG_TAG = ImageAdapter.class.getSimpleName();
     public ImageAdapter(Context c,List<TheMovie> mThumbId) {
         mContext = c;
         mThumbIdi = mThumbId;
-        Log.d("ImageAdapter",((String)("ENter the Adapter" + mThumbIdi.size())));
+        Log.d("ImageAdapter",((String)("Enter the Adapter" + mThumbIdi.size())));
     }
 
     public int getCount() {
@@ -31,7 +31,8 @@ public class ImageAdapter extends BaseAdapter {
     }
 
     public Object getItem(int position) {
-        return null;
+
+        return mThumbIdi.toArray()[position];
     }
 
     public long getItemId(int position) {
@@ -59,8 +60,8 @@ public class ImageAdapter extends BaseAdapter {
             txtView=(TextView) convertView.findViewById(R.id.list_item_text);
         }
 
-        Log.d("Poster Path", mThumbIdi.get(position).getPosterPath());
-        Picasso.with(mContext).load(mThumbIdi.get(position).getPosterPath()).into(imageView);
+        Log.d(LOG_TAG, mThumbIdi.get(position).getPosterPath("w185"));
+        Picasso.with(mContext).load(mThumbIdi.get(position).getPosterPath("w185")).into(imageView);
         //imageView.setImageResource(mThumbIdi.get(position).getPosterPath());
         txtView.setText(mThumbIdi.get(position).getMovieTitle());
 
