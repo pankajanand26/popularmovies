@@ -9,24 +9,31 @@
     android:layout_height="match_parent"
     tools:context="com.example.android.popularmovies.MovieDetailFragment">
 
-    <ImageView
+    <FrameLayout
         android:layout_width="match_parent"
         android:layout_height="400dp"
-        android:id="@+id/movie_poster"
-         />
-
-    <TextView android:id="@+id/movie_detail"
-        android:layout_below="@id/movie_poster"
+        android:id="@+id/movie_poster">
+    <ImageView
         android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:textColor="#ffffff"
-        android:fontFamily="sans-serif-medium"
-        android:textStyle="normal|bold|italic"
-        android:textSize="22sp"
-        />
+        android:layout_height="match_parent"
+        android:id="@+id/movie_poster1">
+         </ImageView>
+
+        <TextView android:id="@+id/movie_detail"
+            android:layout_below="@id/movie_poster"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:textColor="#ffffff"
+            android:background="#55000000"
+            android:fontFamily="sans-serif-medium"
+            android:textStyle="normal|bold|italic"
+            android:layout_gravity="bottom"
+            android:textSize="22sp"
+            />
+    </FrameLayout>
 
     <TextView android:id="@+id/movie_rating"
-        android:layout_below="@id/movie_detail"
+        android:layout_below="@id/movie_poster"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#ffffff"
@@ -38,7 +45,7 @@
         />
 
     <TextView android:id="@+id/movie_release"
-        android:layout_below="@id/movie_detail"
+        android:layout_below="@id/movie_poster"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:textColor="#ffffff"

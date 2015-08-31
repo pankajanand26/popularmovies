@@ -82,7 +82,7 @@ public class MovieDetail extends AppCompatActivity {
                 Log.d(LOG_TAG,e.toString());
             }
 
-            ImageView imageView= (ImageView) rootView.findViewById(R.id.movie_poster);
+            ImageView imageView= (ImageView) rootView.findViewById(R.id.movie_poster1);
             TextView textView= (TextView) rootView.findViewById(R.id.movie_detail);
             TextView overviewText= (TextView) rootView.findViewById(R.id.movie_overview);
             TextView ratingText= (TextView) rootView.findViewById(R.id.movie_rating);
