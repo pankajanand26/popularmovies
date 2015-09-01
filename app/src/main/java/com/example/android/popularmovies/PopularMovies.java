@@ -12,6 +12,7 @@ public class PopularMovies extends AppCompatActivity {
 
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_movies);
+        //setContentView(R.layout.progress_bar);
 
         if (savedInstanceState == null) {
             getSupportFragmentManager().beginTransaction()

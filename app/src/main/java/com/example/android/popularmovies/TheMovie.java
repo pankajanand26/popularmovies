@@ -1,5 +1,7 @@
 package com.example.android.popularmovies;
 
+import android.os.Parcel;
+import android.os.Parcelable;
 import android.util.Log;
 
 import org.json.JSONException;
@@ -8,7 +10,7 @@ import org.json.JSONObject;
 /**
  * Created by pankajanand on 26/8/15.
  */
-public class TheMovie {
+public class TheMovie implements Parcelable {
     private int movieID,voteCount,voteAverage;
     private String movieTitle,moviePlot,posterPath,movieReleaseDate;
     private JSONObject moviesJSON;
@@ -17,6 +19,32 @@ public class TheMovie {
     public TheMovie(JSONObject movies){
         moviesJSON=movies;
     }
+
+    private TheMovie(Parcel in) {
+        try {
+            moviesJSON = new JSONObject(in.readString());
+        }catch (JSONException e){
+            Log.d("Parcelable","Parcelable Constructor");
+        }
+    }
+
+    public int describeContents() {
+        return 0;
+    }
+
+    public void writeToParcel(Parcel out, int flags) {
+        out.writeString(moviesJSON.toString());
+    }
+
+    public static final Parcelable.Creator<TheMovie> CREATOR = new Parcelable.Creator<TheMovie>() {
+        public TheMovie createFromParcel(Parcel in) {
+            return new TheMovie(in);
+        }
+
+        public TheMovie[] newArray(int size) {
+            return new TheMovie[size];
+        }
+    };
 
     //get the movie title
     String getMovieTitle(){

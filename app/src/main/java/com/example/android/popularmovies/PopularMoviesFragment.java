@@ -1,9 +1,11 @@
 package com.example.android.popularmovies;
 
+import android.app.ProgressDialog;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.AsyncTask;
 import android.os.Bundle;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -14,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.ProgressBar;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -35,6 +38,8 @@ public class PopularMoviesFragment extends Fragment {
     private JSONArray movieList;
     public TheMovie[] movies=new TheMovie[20];
     public GridView gridview;
+    public Parcelable[] list1;
+    public ProgressDialog pd;
 
     public PopularMoviesFragment() {
     }
@@ -42,8 +47,14 @@ public class PopularMoviesFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
+
         if (savedInstanceState == null) {
             fetchMovies("popularity.desc");
+        }
+        else{
+            list1 = savedInstanceState.getParcelableArray("key");
+            movies=(TheMovie []) list1;
+            fetchMovies("vote_count.desc");
         }
         //Add this line in order for this fragment to handle menu events.
         setHasOptionsMenu(true);
@@ -88,16 +99,53 @@ public class PopularMoviesFragment extends Fragment {
 
     }
 
+    //Converting JSON Strings to Movie objects.
+    public void getMovies(JSONArray moviesJSON) {
+        if (moviesJSON != null) {
+
+            try {
+                for (int i = 0;i<moviesJSON.length(); i++) {
+                    movies[i] = new TheMovie(moviesJSON.getJSONObject(i));
+                }
+            } catch (JSONException e) {
+                Log.e("TheMovie", "Unable to create movie object."+ e.toString());
+            }
+        }
+    }
+
     public void fetchMovies(String sort){
         FetchMovies fetchtask = new FetchMovies();
         fetchtask.execute(sort);
     }
 
+    @Override
+     public void onSaveInstanceState(Bundle outState) {
+        outState.putParcelableArray("key", movies);
+        super.onSaveInstanceState(outState);
+    }
 
 
     public class FetchMovies extends AsyncTask<String,Void,JSONArray> {
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
+        ProgressBar dialog;
+
+        @Override
+        protected void onPreExecute() {
+            //dialog= new ProgressBar(getActivity());
+            dialog = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
+            //dialog.setIndeterminate(true);
+           // dialog.setBackgroundColor(255);
+            dialog.setVisibility(View.VISIBLE);
+
+           // pd = new ProgressDialog(getActivity());
+          //  pd.setTitle("Processing...");
+          //  pd.setMessage("Please wait.");
+       //     pd.setCancelable(false);
+         //   pd.setIndeterminate(true);
+           // pd.show();
+        }
+
 
         @Override
         protected JSONArray doInBackground(String... params) {
@@ -115,10 +163,10 @@ public class PopularMoviesFragment extends Fragment {
             Uri builtUri = Uri.parse(BASE_PATH)
                     .buildUpon()
                     .appendQueryParameter(SORT_PARM, params[0])
-                    .appendQueryParameter(API_KEY, "XXXX")
+                    .appendQueryParameter(API_KEY, "206bcb4d43725484275829800db443c9")
                     .build();
 
-            Log.v(LOG_TAG,builtUri.toString());
+            Log.v(LOG_TAG, builtUri.toString());
 
             // These two need to be declared outside the try/catch
             // so that they can be closed in the finally block.
@@ -191,6 +239,10 @@ public class PopularMoviesFragment extends Fragment {
         @Override
         protected void onPostExecute(JSONArray strings) {
 
+            dialog.setVisibility(View.INVISIBLE);
+
+            //pd.dismiss();
+
             movieList=strings;
             Log.d("On AsyncTask",((String)("Length of movieList is " + movieList.length())));
 
@@ -226,19 +278,7 @@ public class PopularMoviesFragment extends Fragment {
 
         }
 
-        //Converting JSON Strings to Movie objects.
-        public void getMovies(JSONArray moviesJSON) {
-            if (moviesJSON != null) {
 
-                try {
-                    for (int i = 0;i<moviesJSON.length(); i++) {
-                            movies[i] = new TheMovie(moviesJSON.getJSONObject(i));
-                    }
-                } catch (JSONException e) {
-                    Log.e("TheMovie", "Unable to create movie object."+ e.toString());
-                }
-            }
-        }
 
     }
 
