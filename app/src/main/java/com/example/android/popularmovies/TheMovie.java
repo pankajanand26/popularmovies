@@ -64,7 +64,7 @@ public class TheMovie implements Parcelable {
             Log.e(LOG_TAG,"Unable to get the poster path.");
         }
 
-        return "http://image.tmdb.org/t/p/"+size+"/"+posterPath;
+        return (String) "http://image.tmdb.org/t/p/"+size+"/"+posterPath;
     }
 
     public String getJSON(){
