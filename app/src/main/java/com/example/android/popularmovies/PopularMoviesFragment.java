@@ -195,7 +195,7 @@ public class PopularMoviesFragment extends Fragment {
             Uri builtUri = Uri.parse(BASE_PATH)
                     .buildUpon()
                     .appendQueryParameter(SORT_PARM, params[0])
-                    .appendQueryParameter(API_KEY, "206bcb4d43725484275829800db443c9")
+                    .appendQueryParameter(API_KEY, "XXXX")
                     .build();
 
             Log.v(LOG_TAG, builtUri.toString());
