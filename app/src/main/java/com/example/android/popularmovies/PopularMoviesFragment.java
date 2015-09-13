@@ -1,6 +1,5 @@
 package com.example.android.popularmovies;
 
-import android.app.ProgressDialog;
 import android.content.Intent;
 import android.content.res.Configuration;
 import android.net.Uri;
@@ -40,7 +39,9 @@ public class PopularMoviesFragment extends Fragment {
     public TheMovie[] movies=new TheMovie[20];
     public GridView gridview;
     public ArrayList<TheMovie> list1;
-    public ProgressDialog pd;
+    public String sort;
+    public ProgressBar pb,pb3;
+
     String LOG_TAG = PopularMoviesFragment.class.getSimpleName();
 
     public PopularMoviesFragment() {
@@ -50,19 +51,34 @@ public class PopularMoviesFragment extends Fragment {
     public void onCreate(Bundle savedInstanceState){
         super.onCreate(savedInstanceState);
 
+
+        pb=(ProgressBar) getActivity().findViewById(R.id.progressBar1);
+
+        if(pb==null) {
+            Log.d(LOG_TAG + "PB Initialization", "Progressbar initialisation");
+        }
+
         if (savedInstanceState == null) {
             Log.d(LOG_TAG,"onCreate invoked");
-            fetchMovies("popularity.desc");
+            sort="popularity.desc";
+            fetchMovies(sort,pb);
+
         }
         else{
             list1 =  savedInstanceState.getParcelableArrayList("key");
+            sort=savedInstanceState.getString("sort_order");
            // bar = foo.toArray(new CustomObject[foo.size()]);
             movies= list1.toArray(new TheMovie[list1.size()]);
+            if(movies[0] == null){
+                Log.d(LOG_TAG, "Movie is null.");
+                Log.d(LOG_TAG,sort);
+                fetchMovies(sort,pb);
+            }else{
+                Log.d(LOG_TAG, movies[0].getJSON().toString());
+            }
+
             Log.d(LOG_TAG, (String) ("onCreate invoked" + movies.length));
-            //Log.d(LOG_TAG,list1.get(0).getJSON().toString());
-            Log.d(LOG_TAG, movies[0].getJSON().toString());
-            //fetchMovies("vote_count.desc");
-            //setListAdapter(new ImageAdapter(getActivity(), Arrays.asList(movies)));
+
         }
 
         //Add this line in order for this fragment to handle menu events.
@@ -85,12 +101,14 @@ public class PopularMoviesFragment extends Fragment {
         // as you specify a parent activity in AndroidManifest.xml.
         int id = item.getItemId();
         if (id == R.id.popularity) {
-            fetchMovies(getString(R.string.popularity_based) + ".desc");
+            sort="popularity.desc";
+            fetchMovies(getString(R.string.popularity_based) + ".desc",pb);
             return true;
         }
 
         if(id==R.id.rating){
-            fetchMovies(getString(R.string.rating_based) + ".desc");
+            sort="vote_count.desc";
+            fetchMovies(getString(R.string.rating_based) + ".desc",pb);
             return true;
         }
         return super.onOptionsItemSelected(item);
@@ -102,31 +120,28 @@ public class PopularMoviesFragment extends Fragment {
         Log.d(LOG_TAG,"onCreateView invoked");
         final View rootview=inflater.inflate(R.layout.fragment_movies, container, false);
         //fetch popular movies and populate in the grid
+        mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
+        gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
+        //pb=(ProgressBar) rootview.findViewById(R.id.progressBar1);
 
-//        fetchMovies("popularity.desc");
-       if(savedInstanceState!=null) {
-           mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
-           gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
+        //defining the click listener for items in grid.
+        gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+            public void onItemClick(AdapterView<?> parent, View v,
+                                    int position, long id) {
+                TheMovie move = (TheMovie) mAdapter.getItem(position);
+                String movie_selected = move.getJSON();
+                Intent intent1 = new Intent(getActivity(), MovieDetail.class).putExtra(Intent.EXTRA_TEXT, movie_selected);
+                startActivity(intent1);
+
+            }
+        });
+
+       if(savedInstanceState!=null && movies[0]!=null) {
            gridview.setAdapter(mAdapter);
-
-           //defining the click listener for items in grid.
-           gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-               public void onItemClick(AdapterView<?> parent, View v,
-                                       int position, long id) {
-                   TheMovie move = (TheMovie) mAdapter.getItem(position);
-                   String movie_selected = move.getJSON();
-                   //String movie_json= movie_selected.getMovieTitle();
-                   Intent intent1 = new Intent(getActivity(), MovieDetail.class).putExtra(Intent.EXTRA_TEXT, movie_selected);
-                   startActivity(intent1);
-
-               }
-           });
-       }else{
-           gridview = (GridView) rootview.findViewById(R.id.moviesgrid);
-
        }
-        return rootview;
 
+
+       return rootview;
     }
 
 
@@ -144,8 +159,9 @@ public class PopularMoviesFragment extends Fragment {
         }
     }
 
-    public void fetchMovies(String sort){
-        FetchMovies fetchtask = new FetchMovies();
+    public void fetchMovies(String sort,ProgressBar pb){
+        FetchMovies fetchtask = new FetchMovies(pb);
+ //       fetchtask.setProgressBar(pb);
         fetchtask.execute(sort);
     }
 
@@ -153,6 +169,7 @@ public class PopularMoviesFragment extends Fragment {
     public void onSaveInstanceState(Bundle outState) {
         ArrayList<TheMovie> list= new ArrayList<TheMovie>(Arrays.asList(movies));
         outState.putParcelableArrayList("key", list);
+        outState.putString("sort_order",sort);
         super.onSaveInstanceState(outState);
         Log.d(LOG_TAG, "onSaveInstanceState invoked");
     }
@@ -160,24 +177,25 @@ public class PopularMoviesFragment extends Fragment {
     public class FetchMovies extends AsyncTask<String,Void,JSONArray> {
 
         private final String LOG_TAG = FetchMovies.class.getSimpleName();
-        ProgressBar dialog;
+        private ProgressBar pb2;
+
+        public FetchMovies(ProgressBar pb){
+            this.pb2=pb;
+        }
+
+        public void setProgressBar(ProgressBar pb){
+            this.pb2=pb;
+        }
 
         @Override
         protected void onPreExecute() {
-            //dialog= new ProgressBar(getActivity());
-            //dialog = (ProgressBar) getActivity().findViewById(R.id.progressBar1);
-            //dialog.setIndeterminate(true);
-           // dialog.setBackgroundColor(255);
-            //dialog.setVisibility(View.VISIBLE);
-            Log.d(LOG_TAG,"");
-           // pd = new ProgressDialog(getActivity());
-          //  pd.setTitle("Processing...");
-          //  pd.setMessage("Please wait.");
-       //     pd.setCancelable(false);
-         //   pd.setIndeterminate(true);
-           // pd.show();
+            if(pb2!=null) {
+                pb2.setVisibility(View.VISIBLE);
+            }
+            //pb2.setVisibility(View.VISIBLE);
+            //pb3=(ProgressBar) getActivity().findViewById(R.id.progressBar);
+            //pb3.setVisibility(View.VISIBLE);
         }
-
 
         @Override
         protected JSONArray doInBackground(String... params) {
@@ -195,7 +213,7 @@ public class PopularMoviesFragment extends Fragment {
             Uri builtUri = Uri.parse(BASE_PATH)
                     .buildUpon()
                     .appendQueryParameter(SORT_PARM, params[0])
-                    .appendQueryParameter(API_KEY, "XXXX")
+                    .appendQueryParameter(API_KEY, "206bcb4d43725484275829800db443c9")
                     .build();
 
             Log.v(LOG_TAG, builtUri.toString());
@@ -270,10 +288,11 @@ public class PopularMoviesFragment extends Fragment {
 
         @Override
         protected void onPostExecute(JSONArray strings) {
-
-        //    dialog.setVisibility(View.INVISIBLE);
-
-            //pd.dismiss();
+            if(pb2!=null) {
+                pb2.setVisibility(View.GONE);
+            }
+           // pb2.setVisibility(View.INVISIBLE);
+            //pb3.setVisibility(View.INVISIBLE);
 
             movieList=strings;
             Log.d("On AsyncTask",((String)("Length of movieList is " + movieList.length())));
@@ -283,25 +302,11 @@ public class PopularMoviesFragment extends Fragment {
 
             //if there are no movies then write error message.
             if(movies!=null){
-                mAdapter = new ImageAdapter(getActivity(), Arrays.asList(movies));
 
                 //connecting the image adapter with the grid view.
                 gridview.setAdapter(mAdapter);
 
-                //defining the click listener for items in grid.
-                gridview.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-                    public void onItemClick(AdapterView<?> parent, View v,
-                                            int position, long id) {
-                        TheMovie move=(TheMovie) mAdapter.getItem(position);
-                        String movie_selected= move.getJSON();
-                        //String movie_json= movie_selected.getMovieTitle();
-                        Intent intent1 = new Intent(getActivity(), MovieDetail.class).putExtra(Intent.EXTRA_TEXT,movie_selected);
-                        startActivity(intent1);
-
-                    }
-                });
-
-            }
+               }
             else{
                 Log.d("TheMovie","AAl izz Not Well.");
             }
@@ -320,6 +325,12 @@ public class PopularMoviesFragment extends Fragment {
     public void onConfigurationChanged(Configuration newConfig) {
         super.onConfigurationChanged(newConfig);
         Log.d(LOG_TAG, "onConfigurationChanged invoked");
+    }
+
+    @Override
+    public void onActivityCreated(Bundle instate){
+        super.onActivityCreated(instate);
+        Log.d(LOG_TAG,"onActivityCreated invoked");
     }
 
     @Override
